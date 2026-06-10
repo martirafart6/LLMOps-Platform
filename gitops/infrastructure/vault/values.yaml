@@ -1,0 +1,4 @@
+# Vault Helm values placeholder
+server:
+  dev:
+    enabled: true

@@ -1,0 +1,32 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform.lock.hcl
+terraform/generated/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.env
+*.egg-info/
+dist/
+build/
+
+# OS / editor
+.DS_Store
+.vscode/
+*.swp
+*.swo
+*~
+.idea/
+
+# Project generated files
+.kind-config.lock
+kubeconfig.yaml

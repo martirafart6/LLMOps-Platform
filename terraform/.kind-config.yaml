@@ -1,0 +1,51 @@
+---
+# Kind Cluster Configuration
+# This file defines the Kubernetes cluster topology and networking
+# Used by terraform/setup.sh during cluster bootstrap
+
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+
+name: ai-llmops-platform
+
+# Cluster networking configuration
+networking:
+  # Kubernetes service CIDR  
+  serviceSubnet: "10.96.0.0/12"
+  # Pod network CIDR
+  podSubnet: "10.244.0.0/16"
+  # Disable default CNI, we'll use a simpler setup for development
+  disableDefaultCNI: false
+  # Use custom docker network (must match terraform variable: ai-llmops-kind)
+  apiServerAddress: "172.18.0.10"
+  apiServerPort: 6443
+
+# Control plane node configuration
+nodes:
+  - role: control-plane
+    image: kindest/node:v1.30.0
+    # Expose Kubernetes API on host for kubectl access
+    extraPortMappings:
+      - containerPort: 6443
+        hostPort: 6443
+        protocol: TCP
+    # Mount registry configuration for local registry access
+    extraMounts:
+      - hostPath: /etc/hosts
+        containerPath: /etc/hosts
+        readOnly: false
+  
+  # Worker nodes (will be created by terraform with count)
+  - role: worker
+    image: kindest/node:v1.30.0
+  - role: worker
+    image: kindest/node:v1.30.0
+
+# Container runtime / storage configuration
+containerdConfigPatches:
+  # Configure containerd to allow insecure (HTTP) access to local registry
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5001"]
+      endpoint = ["http://ai-llmops-registry:5000"]
+    [plugins."io.containerd.grpc.v1.cri".registry.configs."ai-llmops-registry:5000".tls]
+      insecure_skip_verify = true
