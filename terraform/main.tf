@@ -256,7 +256,7 @@ output "cluster_endpoint" {
 
 output "registry_endpoint" {
   description = "Local container registry endpoint"
-  value       = "localhost:${var.registry_port}"
+  value       = local.registry_host
 }
 
 output "network_name" {
